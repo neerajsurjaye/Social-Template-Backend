@@ -39,7 +39,7 @@ let getUserById = async (req, res) => {
     let currUser;
     try {
         currUser = await user.findById(id)
-            .select('username name profile_pic posts follows likes');
+            .select('username name profile_pic posts follows likes')
     }
     catch {
         if (!currUser) {
@@ -67,7 +67,7 @@ let getUserByName = async (req, res) => {
     let name = req.query.name;
     let username = req.query.username;
 
-    console.log(name, username);
+    // console.log(name, username);
 
     if (!name && !username) {
         res.send({

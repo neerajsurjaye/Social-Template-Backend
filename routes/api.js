@@ -2,10 +2,11 @@ const express = require('express');
 const router = express.Router();
 
 //importing router
-const postController = require('./postRoute');
-const commentController = require('./commentRoute');
-const tagController = require('./tagRoute');
-const userController = require('./userRoute');
+const postRoute = require('./postRoute');
+const commentRoute = require('./commentRoute');
+const tagRoute = require('./tagRoute');
+const userRoute = require('./userRoute');
+const authRoute = require('./authRoute')
 
 router.get('/', (req, res) => {
     res.json({
@@ -13,10 +14,12 @@ router.get('/', (req, res) => {
     })
 })
 
-router.use('/post/', postController);
-router.use('/user/', userController);
-router.use('/comment/', commentController);
-router.use('/tag/', tagController);
+router.use('/auth/', authRoute);
+router.use('/post/', postRoute);
+router.use('/user/', userRoute);
+router.use('/comment/', commentRoute);
+router.use('/tag/', tagRoute);
 
 
 module.exports = router;
+

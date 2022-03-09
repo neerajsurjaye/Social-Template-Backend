@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 
+const postController = require('../controller/postController');
+const authController = require('../controller/authController')
 
 //create post
-router.post('/', (req, res) => {
-
-})
+router.post('/', authController.isAuth, postController.createPost);
 
 //get post by id
 router.get('/:id', (req, res) => {
@@ -15,16 +15,7 @@ router.get('/:id', (req, res) => {
 })
 
 //?page ?tag
-router.get('/', (req, res) => {
-    let page = req.query.page;
-    let user = req.query.user;
-    let tag = req.query.tag;
-
-    res.json({
-        page, user, tag
-    })
-
-})
+router.get('/', postController.getPost)
 
 //update post
 router.put('/:id', (req, res) => {
