@@ -12,10 +12,13 @@ router.get('/:id', (req, res) => {
     res.send({
         ret: req.params.id,
     })
-})
+});
 
 //?page ?tag
-router.get('/', postController.getPost)
+router.get('/', postController.getPost);
+
+
+router.post('/:id/comment', authController.isAuth, postController.addComment);
 
 //update post
 router.put('/:id', (req, res) => {
