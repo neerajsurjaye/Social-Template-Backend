@@ -8,11 +8,7 @@ const authController = require('../controller/authController')
 router.post('/', authController.isAuth, postController.createPost);
 
 //get post by id
-router.get('/:id', (req, res) => {
-    res.send({
-        ret: req.params.id,
-    })
-});
+router.get('/:id', postController.getPostById);
 
 //?page ?tag
 router.get('/', postController.getPost);
@@ -26,9 +22,7 @@ router.put('/:id', (req, res) => {
 })
 
 //delete post
-router.delete('/:id', (req, res) => {
-
-})
+router.delete('/:id', postController.removePost)
 
 
 
