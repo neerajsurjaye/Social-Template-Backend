@@ -17,7 +17,7 @@ router.get('/', (req, res) => {
 router.use('/auth/', authRoute);
 router.use('/post/', postRoute);
 router.use('/user/', userRoute);
-router.use('/comment/', commentRoute);
+// router.use('/comment/', commentRoute);
 router.use('/tag/', tagRoute);
 
 

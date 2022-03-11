@@ -1,22 +1,18 @@
 const express = require('express');
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
+
+const commentController = require('../controller/commentController');
 // crud operations on comment
-router.post('/', (req, res) => {
-
-})
+router.post('/', commentController.createComment);
 
 //get comments paginated
-router.get('/', (req, res) => {
-
-})
+router.get('/', commentController.getAllComments);
 
 router.put('/:id', (req, res) => {
 
 })
 
-router.delete('/:id', (req, res) => {
-
-})
+router.delete('/:cid', commentController.deleteComment)
 
 module.exports = router;

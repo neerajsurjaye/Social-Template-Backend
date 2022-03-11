@@ -9,6 +9,8 @@ let isAuth = async (req, res, next) => {
     let token = req.headers.authorization;
     let key = process.env.SALT;
 
+    // console.log("tken ", token);
+
     let tokenData;
     let userData;
     try {
@@ -40,6 +42,7 @@ let login = async (req, res) => {
 
     let username = req.body.username;
     let password = req.body.password;
+
 
     let currUser = await user.findOne({ username: username });
 
