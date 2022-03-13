@@ -9,6 +9,7 @@ let createPost = async (req, res) => {
     let title = req.body.title;
     let inpTag = req.body.tag;
 
+
     let tagArr = inpTag.split('+');
     let avilableTags = await tag.find({ name: { $in: tagArr } });
     let newTags = [];
@@ -58,12 +59,6 @@ let createPost = async (req, res) => {
 
     try {
         newPost = await newPost.save();
-
-        let updatedUser = await user.updateOne(
-            { id: req.user._id },
-            { $push: { posts: newPost._id } }
-        );
-
     }
     catch {
         res.json({
@@ -175,4 +170,15 @@ let removePost = async (req, res) => {
 
 }
 
-module.exports = { createPost, getPost, addComment, removePost, getPostById };
+const getPostByUserId = async (req, res) => {
+
+    let id = req.params.id;
+
+    let posts = await post.find({ user: id });
+
+    res.send({
+        success: posts
+    })
+}
+
+module.exports = { createPost, getPost, addComment, removePost, getPostById, getPostByUserId };

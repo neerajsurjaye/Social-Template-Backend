@@ -14,6 +14,7 @@ router.get('/:id', postController.getPostById);
 //?page ?tag
 router.get('/', postController.getPost);
 
+
 //handles comments
 router.use('/:id/comment', authController.isAuth, commentRoute);
 
