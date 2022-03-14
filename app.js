@@ -1,7 +1,8 @@
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
-const dotenv = require('dotenv')
+const dotenv = require('dotenv');
+const cors = require('cors');
 
 dotenv.config();
 
@@ -12,7 +13,9 @@ const tag = require('./models/tag');
 const comment = require('./models/comment');
 
 //middlewares
+app.use(cors());
 app.use(express.json());
+
 
 //importing controllers
 const api = require('./routes/api');
@@ -26,7 +29,7 @@ app.get('/', (req, res) => {
 
 app.use('/api', api);
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 app.listen(port, () => {
     console.log(`Listning on ${port}`);
 })
