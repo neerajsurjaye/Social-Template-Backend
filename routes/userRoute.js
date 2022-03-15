@@ -3,11 +3,14 @@ const router = express.Router({ mergeParams: true });
 
 const userController = require('../controller/userController');
 const postController = require('../controller/postController');
+const authController = require('../controller/authController');
 
 // /api/user/
 
 //creates a user
 router.post('/', userController.createUser);
+
+router.get('/current', authController.isAuth, userController.getCurrentUser);
 
 router.get('/:id', userController.getUserById);
 

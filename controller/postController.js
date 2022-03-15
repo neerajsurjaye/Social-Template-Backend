@@ -181,4 +181,6 @@ const getPostByUserId = async (req, res) => {
     })
 }
 
+
+
 module.exports = { createPost, getPost, addComment, removePost, getPostById, getPostByUserId };

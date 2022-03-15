@@ -86,4 +86,12 @@ let getUserByName = async (req, res) => {
     })
 }
 
-module.exports = { createUser, getUserById, getUserByName };
+let getCurrentUser = (req, res) => {
+
+    res.json({
+        success: req.user,
+    })
+
+}
+
+module.exports = { createUser, getUserById, getUserByName, getCurrentUser };

@@ -14,6 +14,7 @@ router.get('/', (req, res) => {
     })
 })
 
+
 router.use('/auth/', authRoute);
 router.use('/post/', postRoute);
 router.use('/user/', userRoute);
