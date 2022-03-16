@@ -16,10 +16,10 @@ router.get('/', (req, res) => {
 
 
 router.use('/auth/', authRoute);
-router.use('/post/', postRoute);
-router.use('/user/', userRoute);
+router.use('/posts/', postRoute);
+router.use('/users/', userRoute);
 // router.use('/comment/', commentRoute);
-router.use('/tag/', tagRoute);
+router.use('/tags/', tagRoute);
 
 
 module.exports = router;
