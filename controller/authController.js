@@ -18,7 +18,7 @@ let isAuth = async (req, res, next) => {
         tokenData = await jwt.verify(token, key);
 
         userData = await user.findOne({ username: tokenData.username });
-
+        console.log({ token, userData, tokenData });
         if (!userData) {
             res.json({
                 err: "Invalid user"
