@@ -75,10 +75,21 @@ let createPost = async (req, res) => {
 
 let getPost = async (req, res) => {
 
-    let posts = await post.find().populate('tag');
+    let page = req.query.page || 0;
+    let limit = 10;
+    let count = await post.find().count();
+    count = Number.parseInt(count / limit);
+
+    let posts = await post
+        .find()
+        .limit(limit)
+        .skip(page * limit)
+        .populate('tag');
 
     res.json({
-        success: posts
+        success: {
+            posts, count
+        }
     })
 
 }
@@ -182,5 +193,40 @@ const getPostByUserId = async (req, res) => {
 }
 
 
+let updateVotes = async (req, res) => {
 
-module.exports = { createPost, getPost, addComment, removePost, getPostById, getPostByUserId };
+    // console.log("body", req.body);
+
+    let dec = req.body.dec;
+    let id = req.body.id;
+    let opr;
+
+    // console.log({ dec });
+    if (dec) {
+        opr = post.findOneAndUpdate({ _id: id }, { $inc: { votes: -1 } });
+    } else {
+        opr = post.findOneAndUpdate({ _id: id }, { $inc: { votes: 1 } });
+    }
+
+    try {
+        opr = await opr;
+    }
+    catch (e) {
+        res.json({
+            err: e
+        });
+        return;
+    }
+
+
+    opr = await post.findOne({ _id: id });
+
+    res.json({
+        success: opr,
+    })
+
+}
+
+
+
+module.exports = { createPost, getPost, addComment, removePost, getPostById, getPostByUserId, updateVotes };

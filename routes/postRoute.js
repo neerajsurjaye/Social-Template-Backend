@@ -18,6 +18,9 @@ router.get('/', postController.getPost);
 //handles comments
 router.use('/:id/comment', authController.isAuth, commentRoute);
 
+//update votes
+router.use('/:id/votes', authController.isAuth, postController.updateVotes);
+
 //update post
 router.put('/:id', (req, res) => {
 
