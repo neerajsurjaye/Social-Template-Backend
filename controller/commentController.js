@@ -4,9 +4,11 @@ let getAllComments = async (req, res) => {
 
     let postId = req.params.id;
 
-    let resComments = await comment.find({
-        post: postId
-    })
+    let resComments = await comment
+        .find({
+            post: postId
+        })
+        .populate('user');
 
     res.send({
         success: resComments

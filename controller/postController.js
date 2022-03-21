@@ -149,7 +149,8 @@ let getPostById = async (req, res) => {
     let retPost;
 
     try {
-        retPost = await post.findById(id);
+        retPost = await post.findById(id)
+            .populate('tag');
     } catch {
         res.json({
             err: "Invalid ID",
