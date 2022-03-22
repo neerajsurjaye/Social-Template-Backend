@@ -80,10 +80,36 @@ let getPost = async (req, res) => {
     let count = await post.find().count();
     count = Number.parseInt(count / limit);
 
+    let search = req.query.search;
+    let sort = req.query.sort;
+
+    console.log({ search, sort });
+
+    let searchQuery = {
+        $or: [
+            {
+                text: { $regex: `${search}` }
+            },
+            {
+                title: { $regex: `${search}` }
+            }
+        ]
+    }
+
+
+    let sortQuery;
+
+    if (sort == 'Top') {
+        sortQuery = { 'votes': -1 }
+    } else {
+        sortQuery = { 'date': -1 }
+    }
+
     let posts = await post
-        .find()
+        .find(searchQuery)
         .limit(limit)
         .skip(page * limit)
+        .sort(sortQuery)
         .populate('tag');
 
     res.json({
@@ -169,11 +195,22 @@ let removePost = async (req, res) => {
     let retPost;
 
     try {
+
+        retPost = await post.findOne({ _id: id });
+
+        if (retPost.user != req.user._id) {
+            res.json({
+                err: "Invalid user"
+            })
+        }
+
+
         retPost = await post.deleteOne({ _id: id });
     } catch {
         res.json({
             err: "Invalid ID",
         })
+        return;
     }
 
     res.json({

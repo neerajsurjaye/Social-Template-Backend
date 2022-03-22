@@ -10,7 +10,7 @@ router.post('/', auth.isAuth, commentController.createComment);
 //get comments paginated
 router.get('/', commentController.getAllComments);
 
-router.put('/:id', (req, res) => {
+router.put('/:cid', (req, res) => {
 
 })
 

@@ -27,7 +27,7 @@ router.put('/:id', (req, res) => {
 })
 
 //delete post
-router.delete('/:id', postController.removePost)
+router.delete('/:id', authController.isAuth, postController.removePost)
 
 
 
