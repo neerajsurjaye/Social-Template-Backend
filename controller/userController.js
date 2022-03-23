@@ -94,4 +94,39 @@ let getCurrentUser = (req, res) => {
 
 }
 
-module.exports = { createUser, getUserById, getUserByName, getCurrentUser };
+let followUser = async (req, res) => {
+
+    let followId = req.params.id;
+    let userId = req.user._id;
+
+    console.log({ followId, userId });
+
+    if (followId == userId) {
+        res.json({
+            err: "Cant follow yourself"
+        })
+        return;
+    }
+
+    // let exists = await user.find({
+    //     follows : {
+    //         $in : []
+    //     }
+    // })
+
+    let result = await user.updateOne({ _id: userId },
+        {
+            $addToSet: {
+                follows: followId
+            }
+        });
+
+    console.log({ result });
+
+    res.json({
+        success: "followed"
+    })
+
+}
+
+module.exports = { createUser, getUserById, getUserByName, getCurrentUser, followUser };

@@ -77,11 +77,11 @@ let getPost = async (req, res) => {
 
     let page = req.query.page || 0;
     let limit = 10;
-    let count = await post.find().count();
-    count = Number.parseInt(count / limit);
+
 
     let search = req.query.search;
     let sort = req.query.sort;
+    let user = req.query.user;
 
     console.log({ search, sort });
 
@@ -96,6 +96,10 @@ let getPost = async (req, res) => {
         ]
     }
 
+    if (user) {
+        searchQuery.user = user;
+    }
+
 
     let sortQuery;
 
@@ -105,12 +109,16 @@ let getPost = async (req, res) => {
         sortQuery = { 'date': -1 }
     }
 
+    //count no of posts then pages
+    let count = await post.find(searchQuery).count();
+    count = Number.parseInt(count / limit);
+
     let posts = await post
         .find(searchQuery)
         .limit(limit)
         .skip(page * limit)
         .sort(sortQuery)
-        .populate('tag');
+        .populate('tag user');
 
     res.json({
         success: {
@@ -176,7 +184,7 @@ let getPostById = async (req, res) => {
 
     try {
         retPost = await post.findById(id)
-            .populate('tag');
+            .populate('tag user');
     } catch {
         res.json({
             err: "Invalid ID",

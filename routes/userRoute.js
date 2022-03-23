@@ -16,6 +16,8 @@ router.get('/:id', userController.getUserById);
 
 router.get('/', userController.getUserByName);
 
+router.put('/follow/:id', authController.isAuth, userController.followUser);
+
 //:id/post/?page
 router.get('/:id/post/', postController.getPostByUserId);
 
