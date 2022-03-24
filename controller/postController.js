@@ -189,6 +189,7 @@ let getPostById = async (req, res) => {
         res.json({
             err: "Invalid ID",
         })
+        return;
     }
 
     res.json({
@@ -273,6 +274,53 @@ let updateVotes = async (req, res) => {
 
 }
 
+let generateFeed = async (req, res) => {
+    console.log(req.params, req.query);
+
+    let search = req.query.search;
+    let sort = req.query.sort;
+    let page = req.query.page || 0;
+    let limit = 10;
+
+    console.log({ search });
+
+    let searchQuery = {
+        user: { $in: req.user.follows },
+
+        $or: [
+            {
+                text: { $regex: search },
+            },
+            {
+                title: { $regex: search }
+            }
+        ]
+    };
+
+    let sortQuery;
+
+    if (sort == 'Top') {
+        sortQuery = { 'votes': -1 }
+    } else {
+        sortQuery = { 'date': -1 }
+    }
+
+    let count = await post.find(searchQuery).count();
+    count = Number.parseInt(count / limit);
+
+    let posts = await post
+        .find(searchQuery)
+        .populate('user tag')
+        .sort(sortQuery)
+        .skip(page * limit)
+        .limit(limit);
+
+    res.json({
+        success: {
+            posts, count
+        }
+    })
+}
 
 
-module.exports = { createPost, getPost, addComment, removePost, getPostById, getPostByUserId, updateVotes };
+module.exports = { createPost, getPost, addComment, removePost, getPostById, getPostByUserId, updateVotes, generateFeed };
