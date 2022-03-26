@@ -207,10 +207,14 @@ let removePost = async (req, res) => {
 
         retPost = await post.findOne({ _id: id });
 
-        if (retPost.user != req.user._id) {
+        if (retPost.user != req.user.id) {
             res.json({
-                err: "Invalid user"
+                err: "Invalid user",
+                // uid: retPost.user,
+                // fuid: req.user.id,
+                // fin: retPost.user == req.user.id
             })
+            return;
         }
 
 
@@ -218,6 +222,7 @@ let removePost = async (req, res) => {
     } catch {
         res.json({
             err: "Invalid ID",
+            id: id
         })
         return;
     }
@@ -322,5 +327,45 @@ let generateFeed = async (req, res) => {
     })
 }
 
+let getPostByTag = async (req, res) => {
 
-module.exports = { createPost, getPost, addComment, removePost, getPostById, getPostByUserId, updateVotes, generateFeed };
+    // console.log(req.params, req.query);
+
+    let id = req.query.id;
+    let sort = req.query.sort;
+    let page = req.query.page || 0;
+    let limit = 10;
+
+    console.log({ id }, "getPostById");
+
+    let searchQuery = {
+        tag: id
+    };
+
+    let sortQuery;
+
+    if (sort == 'Top') {
+        sortQuery = { 'votes': -1 }
+    } else {
+        sortQuery = { 'date': -1 }
+    }
+
+    let count = await post.find(searchQuery).count();
+    count = Number.parseInt(count / limit);
+
+    let posts = await post
+        .find(searchQuery)
+        .populate('user tag')
+        .sort(sortQuery)
+        .skip(page * limit)
+        .limit(limit);
+
+    res.json({
+        success: {
+            posts, count
+        }
+    })
+
+}
+
+module.exports = { createPost, getPost, addComment, removePost, getPostById, getPostByUserId, updateVotes, generateFeed, getPostByTag };

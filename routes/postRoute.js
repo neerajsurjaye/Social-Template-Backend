@@ -11,6 +11,8 @@ router.post('/', authController.isAuth, postController.createPost);
 //generate feed
 router.get('/feed', authController.isAuth, postController.generateFeed);
 
+// get post by tag
+router.get('/tag', postController.getPostByTag);
 //get post by id
 router.get('/:id', postController.getPostById);
 
