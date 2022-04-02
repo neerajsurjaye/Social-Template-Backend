@@ -3,6 +3,7 @@ const app = express();
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
+const path = require('path')
 
 dotenv.config();
 
@@ -23,11 +24,19 @@ const api = require('./routes/api');
 
 mongoose.connect('mongodb://127.0.0.1:27017/social-template');
 
-app.get('/', (req, res) => {
-    res.send('FrontEnd');
-})
+app.use(express.static(path.join(__dirname, 'static', 'build')))
+
+// app.get('/', (req, res) => {
+//     res.send('FrontEnd');
+// })
 
 app.use('/api', api);
+
+app.get('/*', (req, res) => {
+    let dir = (path.join(__dirname, 'static', 'build', 'index.html'));
+    console.log(dir);
+    res.sendFile(dir);
+})
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
