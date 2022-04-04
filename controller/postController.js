@@ -88,10 +88,10 @@ let getPost = async (req, res) => {
     let searchQuery = {
         $or: [
             {
-                text: { $regex: `${search}` }
+                text: { $regex: `${search}`, $options: 'i' }
             },
             {
-                title: { $regex: `${search}` }
+                title: { $regex: `${search}`, $options: 'i' }
             }
         ]
     }
