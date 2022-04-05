@@ -360,9 +360,15 @@ let getPostByTag = async (req, res) => {
         .skip(page * limit)
         .limit(limit);
 
+    let tagName = await tag
+        .findOne({ _id: id })
+        .populate('name');
+
+    tagName = tagName.name;
+
     res.json({
         success: {
-            posts, count
+            posts, count, tagName
         }
     })
 
