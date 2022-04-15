@@ -65,7 +65,8 @@ let login = async (req, res) => {
     if (isMatch) {
         let token = await jwt.sign(tokenObj, key);
         res.json({
-            success: token
+            success: token,
+            user: currUser
         })
         return;
     }
