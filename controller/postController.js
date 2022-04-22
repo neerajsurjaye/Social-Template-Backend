@@ -2,6 +2,7 @@ const post = require('../models/post');
 const user = require('../models/user');
 const comment = require('../models/comment');
 const tag = require('../models/tag');
+const { spawn } = require('child_process')
 
 let createPost = async (req, res) => {
 
@@ -374,4 +375,26 @@ let getPostByTag = async (req, res) => {
 
 }
 
-module.exports = { createPost, getPost, addComment, removePost, getPostById, getPostByUserId, updateVotes, generateFeed, getPostByTag };
+let savePostCluster = async (id) => {
+
+    let data;
+    const script = spawn('python', ['ml/find_cluster.py', id]);
+
+    script.stdout.on('data', (localData) => {
+        data = localData.toString();
+        console.log("ran", data);
+    });
+
+    script.stderr.on('data', (localData) => {
+        data = localData.toString();
+        console.log("ran", data);
+    });
+
+    script.stdout.on('close', () => {
+        console.log('closing');
+    });
+
+    console.log({ data });
+}
+
+module.exports = { createPost, getPost, addComment, removePost, getPostById, getPostByUserId, updateVotes, generateFeed, getPostByTag, savePostCluster };
