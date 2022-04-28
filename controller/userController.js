@@ -1,5 +1,7 @@
 const bcrypt = require('bcryptjs');
+const { json } = require('express/lib/response');
 const user = require('../models/user');
+const reccomendation = require('../models/userReccomendation');
 
 let createUser = async (req, res) => {
 
@@ -26,10 +28,32 @@ let createUser = async (req, res) => {
     })
 
     newUser = await newUser.save();
+    await makeReccomendation(newUser._id);
 
     res.json({
         success: "User created"
     })
+}
+
+let makeReccomendation = async (id) => {
+
+    let recc = [];
+    for (let i = 0; i <= 25; i++) {
+        recc[i] = {
+            id: i,
+            count: 0
+        };
+    }
+
+    let newUser = new reccomendation({
+        userId: id,
+        recc: recc
+    })
+
+    let res = await newUser.save();
+
+    // console.log("New recc", res);
+    return res;
 }
 
 let getUserById = async (req, res) => {
@@ -129,4 +153,4 @@ let followUser = async (req, res) => {
 
 }
 
-module.exports = { createUser, getUserById, getUserByName, getCurrentUser, followUser };
+module.exports = { createUser, getUserById, getUserByName, getCurrentUser, followUser, makeReccomendation };

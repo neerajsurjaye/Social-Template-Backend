@@ -25,9 +25,11 @@ let run = async () => {
             console.log("saved", i, data.toString());
         })
         savePost.stderr.on('data', (data) => {
-            console.log("err", data.toString());
+            console.log("err", i, data.toString());
         })
     }
+
+    console.log("Exiting :)")
 
 }
 

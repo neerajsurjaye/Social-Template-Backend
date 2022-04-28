@@ -3,6 +3,7 @@ const user = require('../models/user');
 const comment = require('../models/comment');
 const tag = require('../models/tag');
 const { spawn } = require('child_process')
+const postCluster = require('../models/postcluster');
 
 let createPost = async (req, res) => {
 
@@ -68,6 +69,9 @@ let createPost = async (req, res) => {
         return;
     }
 
+    // console.log({ newPost });
+    savePostCluster(newPost.id);
+
     res.json({
         success: "post created"
     })
@@ -84,7 +88,8 @@ let getPost = async (req, res) => {
     let sort = req.query.sort;
     let user = req.query.user;
 
-    console.log({ search, sort });
+    // console.log({ search, sort });
+    // console.log("clusters", await postCluster.find());
 
     let searchQuery = {
         $or: [
@@ -121,9 +126,22 @@ let getPost = async (req, res) => {
         .sort(sortQuery)
         .populate('tag user');
 
+    let out = [];
+    for (let x in posts) {
+        y = posts[x];
+
+        let cluster = await postCluster.findOne({
+            postid: y.id
+        })
+        y = y.toObject();
+        y.cluster = cluster;
+        out.push(y);
+    }
+
+
     res.json({
         success: {
-            posts, count
+            posts: out, count
         }
     })
 
@@ -192,6 +210,8 @@ let getPostById = async (req, res) => {
         })
         return;
     }
+
+    // console.log({ retPost }, retPost.id);
 
     res.json({
         success: retPost

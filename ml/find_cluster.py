@@ -12,7 +12,7 @@ from bson.objectid import ObjectId
 cluster = MongoClient('mongodb://127.0.0.1:27017/')
 db = cluster['social-template']
 post = db['posts']
-clusterPost = db['postcluster']
+clusterPost = db['postclusters']
 
 
 def run_model(text, id):
