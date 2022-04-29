@@ -11,6 +11,9 @@ router.post('/', authController.isAuth, postController.createPost);
 //generate feed
 router.get('/feed', authController.isAuth, postController.generateFeed);
 
+//reccomendation
+router.get('/recc', authController.isAuth, postController.getReccomendedPost);
+
 // get post by tag
 router.get('/tag', postController.getPostByTag);
 //get post by id

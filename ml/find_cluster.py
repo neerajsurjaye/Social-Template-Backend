@@ -32,7 +32,7 @@ def run_model(text, id):
 
     post_vector = vectorizer.transform([post]).toarray()
     post_cluster = model.predict(post_vector)
-    print(post_cluster[0])
+    print("Post cluster is : ", post_cluster[0])
     clusterPost.insert_one({'postid': id, 'cluster': str(post_cluster[0])})
 
 
@@ -46,6 +46,7 @@ def main():
     curr_post = post.find_one({'_id': ObjectId(id)})
     post_text = curr_post['text']
     post_title = curr_post['title']
+    print("running for", post_title)
     run_model(post_text + ' ' + post_title, id)
 
 

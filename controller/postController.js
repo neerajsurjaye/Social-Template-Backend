@@ -4,6 +4,7 @@ const comment = require('../models/comment');
 const tag = require('../models/tag');
 const { spawn } = require('child_process')
 const postCluster = require('../models/postcluster');
+const reccomendation = require('../models/userReccomendation');
 
 let createPost = async (req, res) => {
 
@@ -174,7 +175,7 @@ let addComment = async (req, res) => {
         return;
     }
 
-    console.log({ currComment, user: req.user });
+    // console.log({ currComment, user: req.user });
 
     let newComment = new comment({
         text: currComment,
@@ -281,14 +282,32 @@ let updateVotes = async (req, res) => {
         opr = post.findOneAndUpdate({ _id: id }, { $inc: { votes: 1 } });
     }
 
+    opr = await opr;
+
+    console.log("Votes updated");
+
     try {
-        opr = await opr;
+
+        let recc = await reccomendation.findOne({ userId: req.user._id });
+        let cat = await postCluster.findOne({ postid: id });
+
+        // console.log(cat);
+        let cluster = cat.cluster;
+        let newRecc = recc.recc;
+        let updatedVal = newRecc[cluster];
+
+        if (dec) {
+            updatedVal.count--;
+        } else {
+            updatedVal.count++;
+        }
+
+        // console.log("clutstere", newRecc[cluster]);
+        await reccomendation.findOneAndUpdate({ userId: req.user._id }, { recc: newRecc })
+
     }
     catch (e) {
-        res.json({
-            err: e
-        });
-        return;
+        console.log({ err: e });
     }
 
 
@@ -407,14 +426,57 @@ let savePostCluster = async (id) => {
 
     script.stderr.on('data', (localData) => {
         data = localData.toString();
-        console.log("ran", data);
+        console.log("Error", data);
     });
 
     script.stdout.on('close', () => {
         console.log('closing');
     });
 
-    console.log({ data });
+
 }
 
-module.exports = { createPost, getPost, addComment, removePost, getPostById, getPostByUserId, updateVotes, generateFeed, getPostByTag, savePostCluster };
+let getReccomendedPost = async (req, res) => {
+
+    let uid = req.user.id;
+    let recc = await reccomendation.findOne({ userId: uid });
+
+    let reccArr = recc.recc;
+
+    reccArr.sort((a, b) => {
+        return b.count - a.count;
+    });
+
+    let topRecc = [];
+    for (let i = 0; i < 3; i++) {
+        topRecc.push(reccArr[i].id.toString());
+    }
+
+    // console.log(reccArr, topRecc);
+
+    let posts = await postCluster.find({ cluster: { $in: topRecc } });
+
+    // console.log({ posts });
+
+    let postsId = []
+
+    for (let i = 0; i < posts.length; i++) {
+        postsId.push(posts[i].postid);
+    }
+
+
+
+    posts = await post
+        .find({ _id: { $in: postsId } })
+        .populate('tag user');
+
+    // console.log({ postsId, posts }); 
+
+    res.send({
+        success: {
+            posts: posts
+        }
+    });
+}
+
+module.exports = { createPost, getPost, addComment, removePost, getPostById, getPostByUserId, updateVotes, generateFeed, getPostByTag, savePostCluster, getReccomendedPost };
