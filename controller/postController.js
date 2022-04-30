@@ -5,6 +5,7 @@ const tag = require('../models/tag');
 const { spawn } = require('child_process')
 const postCluster = require('../models/postcluster');
 const reccomendation = require('../models/userReccomendation');
+const votesMap = require('../models/votesMap');
 
 let createPost = async (req, res) => {
 
@@ -266,6 +267,40 @@ const getPostByUserId = async (req, res) => {
     })
 }
 
+let canUpdateVotes = async (id, dec) => {
+
+    let voteStatus = await votesMap.findOne({ userId: id });
+    let status = dec ? -1 : 1;
+
+    console.log({ voteStatus });
+
+
+    if (!voteStatus) {
+        let vote = new votesMap({
+            userId: id,
+            status: status
+        })
+
+        await vote.save();
+
+        return status;
+    }
+
+
+    if (voteStatus.status != 1 && !dec) {
+        await votesMap.updateOne({ userId: id }, { status: voteStatus.status + 1 });
+        return 1;
+    }
+
+    if (voteStatus.status != -1 && dec) {
+        await votesMap.updateOne({ userId: id }, { status: voteStatus.status - 1 });
+        return -1;
+    }
+
+    return 0;
+
+
+}
 
 let updateVotes = async (req, res) => {
 
@@ -275,14 +310,23 @@ let updateVotes = async (req, res) => {
     let id = req.body.id;
     let opr;
 
-    // console.log({ dec });
-    if (dec) {
-        opr = post.findOneAndUpdate({ _id: id }, { $inc: { votes: -1 } });
-    } else {
-        opr = post.findOneAndUpdate({ _id: id }, { $inc: { votes: 1 } });
-    }
+    //deprecated
+    // if (dec) {
+    //     opr = post.findOneAndUpdate({ _id: id }, { $inc: { votes: -1 } });
+    // } else {
+    //     opr = post.findOneAndUpdate({ _id: id }, { $inc: { votes: 1 } });
+    // }
 
-    opr = await opr;
+    // console.log(await canUpdateVotes(id, dec));
+    opr = await post.findOneAndUpdate(
+        { _id: id },
+        {
+            $inc: {
+                votes: await canUpdateVotes(id, dec),
+            }
+        }
+    );
+
 
     console.log("Votes updated");
 
