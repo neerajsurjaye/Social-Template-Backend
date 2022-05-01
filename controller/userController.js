@@ -2,6 +2,9 @@ const bcrypt = require('bcryptjs');
 const { json } = require('express/lib/response');
 const user = require('../models/user');
 const reccomendation = require('../models/userReccomendation');
+const userFollow = require('../models/userFollow');
+const req = require('express/lib/request');
+const res = require('express/lib/response');
 
 let createUser = async (req, res) => {
 
@@ -123,7 +126,7 @@ let followUser = async (req, res) => {
     let followId = req.params.id;
     let userId = req.user._id;
 
-    console.log({ followId, userId });
+    // console.log({ followId, userId });
 
     if (followId == userId) {
         res.json({
@@ -138,14 +141,39 @@ let followUser = async (req, res) => {
     //     }
     // })
 
-    let result = await user.updateOne({ _id: userId },
-        {
-            $addToSet: {
-                follows: followId
-            }
-        });
+    //deprecated
+    // let result = await user.updateOne({ _id: userId },
+    //     {
+    //         $addToSet: {
+    //             follows: followId
+    //         }
+    //     });
 
-    console.log({ result });
+    // console.log({ result });
+
+
+    // console.log("following");
+    let follows = await userFollow.findOne({ userId: userId, followId: followId });
+
+
+    if (follows) {
+
+        await userFollow.deleteOne({ userId: userId, followId: followId });
+        res.json({
+            sucess: "deleted"
+        })
+        return;
+
+    }
+
+    let follow = new userFollow({
+        userId: userId,
+        followId: followId
+    })
+
+    await follow.save();
+
+    // console.log("Followed");
 
     res.json({
         success: "followed"
@@ -153,4 +181,21 @@ let followUser = async (req, res) => {
 
 }
 
-module.exports = { createUser, getUserById, getUserByName, getCurrentUser, followUser, makeReccomendation };
+let follows = async (req, res) => {
+
+    let id = req.params.id || req.query.id;
+
+    let follow = await userFollow.findOne({
+        userId: req.user.id,
+        followId: id
+    })
+
+    let follows = follow ? true : false;
+
+    res.json({
+        success: follows
+    })
+
+}
+
+module.exports = { createUser, getUserById, getUserByName, getCurrentUser, followUser, makeReccomendation, follows };

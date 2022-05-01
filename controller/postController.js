@@ -6,6 +6,8 @@ const { spawn } = require('child_process')
 const postCluster = require('../models/postcluster');
 const reccomendation = require('../models/userReccomendation');
 const votesMap = require('../models/votesMap');
+const userFollow = require('../models/userFollow');
+const { log } = require('console');
 
 let createPost = async (req, res) => {
 
@@ -140,6 +142,9 @@ let getPost = async (req, res) => {
         out.push(y);
     }
 
+    let follows = false;
+
+
 
     res.json({
         success: {
@@ -259,11 +264,20 @@ let removePost = async (req, res) => {
 const getPostByUserId = async (req, res) => {
 
     let id = req.params.id;
+    let uid = req.user.id;
 
+    console.log("ran");
     let posts = await post.find({ user: id });
+    let follows = await userFollow.findOne({
+        userId: id,
+        followId: uid
+    });
+
+    follows = follows ? true : false;
 
     res.send({
-        success: posts
+        success: posts,
+        follows
     })
 }
 
@@ -371,20 +385,30 @@ let generateFeed = async (req, res) => {
     let page = req.query.page || 0;
     let limit = 10;
 
-    console.log({ search });
 
-    let searchQuery = {
-        user: { $in: req.user.follows },
+    //deprecated
+    // let searchQuery = {
+    //     user: { $in: req.user.follows },
 
-        $or: [
-            {
-                text: { $regex: search },
-            },
-            {
-                title: { $regex: search }
-            }
-        ]
-    };
+    //     $or: [
+    //         {
+    //             text: { $regex: search },
+    //         },
+    //         {
+    //             title: { $regex: search }
+    //         }
+    //     ]
+    // };
+
+    let followers = await userFollow.find({ userId: req.user.id });
+
+    let follows = followers.map((x) => {
+        return x.followId;
+    });
+
+
+    let searchQuery = { user: { $in: follows } };
+
 
     let sortQuery;
 
@@ -485,6 +509,11 @@ let getReccomendedPost = async (req, res) => {
     let uid = req.user.id;
     let recc = await reccomendation.findOne({ userId: uid });
 
+    let page = req.query.page || 0;
+    let sort = req.query.sort;
+
+    console.log({ page, sort });
+
     let reccArr = recc.recc;
 
     reccArr.sort((a, b) => {
@@ -508,17 +537,23 @@ let getReccomendedPost = async (req, res) => {
         postsId.push(posts[i].postid);
     }
 
+    let limit = 10;
 
+    let count = await post.find({ _id: { $in: postsId } }).count();
+    count = Number.parseInt(count / limit);
 
     posts = await post
         .find({ _id: { $in: postsId } })
-        .populate('tag user');
+        .populate('tag user')
+        .skip(page * limit)
+        .limit(limit)
 
     // console.log({ postsId, posts }); 
 
     res.send({
         success: {
-            posts: posts
+            posts: posts,
+            count
         }
     });
 }

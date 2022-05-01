@@ -26,6 +26,9 @@ router.put('/', (req, res) => {
 
 })
 
+router.get('/follow/:id', authController.isAuth, userController.follows);
+
+
 //removes a user
 router.delete('/', (req, res) => {
 
