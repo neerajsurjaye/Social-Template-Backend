@@ -137,6 +137,11 @@ let getPost = async (req, res) => {
         let cluster = await postCluster.findOne({
             postid: y.id
         })
+
+        if (!y) {
+            continue;
+        }
+
         y = y.toObject();
         y.cluster = cluster;
         out.push(y);
@@ -349,7 +354,8 @@ let updateVotes = async (req, res) => {
         let recc = await reccomendation.findOne({ userId: req.user._id });
         let cat = await postCluster.findOne({ postid: id });
 
-        // console.log(cat);
+
+        // console.log({ cat });
         let cluster = cat.cluster;
         let newRecc = recc.recc;
         let updatedVal = newRecc[cluster];
@@ -484,8 +490,15 @@ let getPostByTag = async (req, res) => {
 
 let savePostCluster = async (id) => {
 
+    console.log("Starting to generate post cluster");
+
     let data;
-    const script = spawn('python', ['ml/find_cluster.py', id]);
+    //shoudld use python command windows or python3 linux
+    let python = process.env.PYTHON || 'python';
+
+    console.log("Spawning script", python);
+
+    const script = spawn(python, ['ml/find_cluster.py', id]);
 
     script.stdout.on('data', (localData) => {
         data = localData.toString();

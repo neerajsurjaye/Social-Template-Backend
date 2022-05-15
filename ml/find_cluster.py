@@ -9,7 +9,8 @@ import pymongo
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 
-cluster = MongoClient('mongodb://127.0.0.1:27017/')
+cluster = MongoClient(os.environ['MONGO_URL'] or 'mongodb://127.0.0.1:27017/')
+# cluster = MongoClient()
 db = cluster['social-template']
 post = db['posts']
 clusterPost = db['postclusters']
@@ -37,12 +38,16 @@ def run_model(text, id):
 
 
 def main():
+
     args = sys.argv
     if(len(args) <= 1):
         sys.stderr.write("Provide arguments")
         return
 
     id = args[1]
+
+    print("Script Started ", id)
+
     curr_post = post.find_one({'_id': ObjectId(id)})
     post_text = curr_post['text']
     post_title = curr_post['title']

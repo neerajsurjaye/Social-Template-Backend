@@ -22,7 +22,12 @@ app.use(express.json());
 const api = require('./routes/api');
 
 
-mongoose.connect('mongodb://127.0.0.1:27017/social-template');
+const mongoUrl = process.env.MONGO_URL || 'mongodb://127.0.0.1:27017/social-template';
+// const mongoUrl = 'mongodb://127.0.0.1:27017/social-template';
+
+console.log(mongoUrl);
+
+mongoose.connect(mongoUrl);
 
 app.use(express.static(path.join(__dirname, 'static', 'build')))
 
@@ -34,7 +39,7 @@ app.use('/api', api);
 
 app.get('/*', (req, res) => {
     let dir = (path.join(__dirname, 'static', 'build', 'index.html'));
-    console.log(dir);
+    // console.log(dir);
     res.sendFile(dir);
 })
 
