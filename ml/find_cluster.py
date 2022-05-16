@@ -12,6 +12,7 @@ from bson.objectid import ObjectId
 cluster = MongoClient(os.environ['MONGO_URL'] or 'mongodb://127.0.0.1:27017/')
 # cluster = MongoClient()
 db = cluster['social-template']
+# db = cluster
 post = db['posts']
 clusterPost = db['postclusters']
 
@@ -48,7 +49,12 @@ def main():
 
     print("Script Started ", id)
 
+    # allPosts = post.find()
+
+    # print(allPosts)
+
     curr_post = post.find_one({'_id': ObjectId(id)})
+    print(curr_post)
     post_text = curr_post['text']
     post_title = curr_post['title']
     print("running for", post_title)
