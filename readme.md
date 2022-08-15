@@ -1,2 +1,2 @@
 # Social-Template-Backend
-A Template for creating social media sites.
+Backend for socialize; Written in javascript following express.js;
