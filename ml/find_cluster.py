@@ -8,6 +8,7 @@ from nltk.stem.porter import PorterStemmer
 import pymongo
 from pymongo import MongoClient
 from bson.objectid import ObjectId
+from Flask import flask, jsonify
 
 cluster = MongoClient(os.environ['MONGO_URL'] or 'mongodb://127.0.0.1:27017/')
 # cluster = MongoClient()
