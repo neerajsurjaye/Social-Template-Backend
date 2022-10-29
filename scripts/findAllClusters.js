@@ -1,9 +1,11 @@
 let post = require('../models/post');
 let user = require('../models/user');
 let { spawn } = require('child_process');
+const axios = require('axios');
 
 
-
+//manually call this method dont call in the program
+//finds all the clusters
 let run = async () => {
 
     const mongoose = require('mongoose');

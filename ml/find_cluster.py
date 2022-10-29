@@ -9,6 +9,13 @@ from flask import Flask, jsonify, request
 
 
 cluster = None
+port = None
+
+try:
+    port = os.environ['PYTHON_PORT']
+except:
+    port = 5757
+
 try:
     cluster = MongoClient(os.environ['MONGO_URL'])
 except:
@@ -78,13 +85,13 @@ def run():
         try:
             id = args['id']
         except:
-            return jsonify({'error': 'pass an id'})
+            return jsonify({'error': 'pass an id ' + id})
 
         res = main(id)
 
         return jsonify(res)
 
-    app.run(port=5757)
+    app.run(port=port)
 
 
 run()

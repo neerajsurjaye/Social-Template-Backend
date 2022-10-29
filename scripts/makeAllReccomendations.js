@@ -4,10 +4,10 @@ const userController = require('../controller/userController');
 
 const run = async () => {
 
-    const mongoose = require('mongoose');
+    // const mongoose = require('mongoose');
 
 
-    mongoose.connect('mongodb://127.0.0.1:27017/social-template');
+    // mongoose.connect('mongodb://127.0.0.1:27017/social-template');
 
     let users = await user.find();
 
