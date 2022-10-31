@@ -23,17 +23,11 @@ const api = require('./routes/api');
 
 
 const mongoUrl = process.env.MONGO_URL || 'mongodb://127.0.0.1:27017/social-template';
-// const mongoUrl = 'mongodb://127.0.0.1:27017/social-template';
-
-console.log(mongoUrl);
 
 mongoose.connect(mongoUrl);
 
 app.use(express.static(path.join(__dirname, 'static', 'build')))
 
-// app.get('/', (req, res) => {
-//     res.send('FrontEnd');
-// })
 
 app.use('/api', api);
 

@@ -7,7 +7,8 @@ const postCluster = require('../models/postcluster');
 const reccomendation = require('../models/userReccomendation');
 const votesMap = require('../models/votesMap');
 const userFollow = require('../models/userFollow');
-const { log } = require('console');
+const axios = require('axios');
+
 
 let createPost = async (req, res) => {
 
@@ -490,30 +491,9 @@ let getPostByTag = async (req, res) => {
 
 let savePostCluster = async (id) => {
 
-    console.log("Starting to generate post cluster");
+    let res = await axios.post(`http://127.0.0.1:5757/cluster?id=${id}`);
 
-    let data;
-    //shoudld use python command windows or python3 linux
-    let python = process.env.PYTHON || 'python';
-
-    console.log("Spawning script", python);
-
-    const script = spawn(python, ['ml/find_cluster.py', id]);
-
-    script.stdout.on('data', (localData) => {
-        data = localData.toString();
-        console.log("ran", data);
-    });
-
-    script.stderr.on('data', (localData) => {
-        data = localData.toString();
-        console.log("Error", data);
-    });
-
-    script.stdout.on('close', () => {
-        console.log('closing');
-    });
-
+    console.log(`save post cluster response data for id : ${id} `, res.data);
 
 }
 
