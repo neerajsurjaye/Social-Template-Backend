@@ -1,3 +1,6 @@
 node
 python
 flask
+nltk
+pymongo
+add env varaiables placed in READ_ME_BEFORE_RUNNING.txt

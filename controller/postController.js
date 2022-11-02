@@ -75,7 +75,7 @@ let createPost = async (req, res) => {
     }
 
     // console.log({ newPost });
-    savePostCluster(newPost.id);
+    await savePostCluster(newPost.id);
 
     res.json({
         success: "post created"
@@ -292,7 +292,7 @@ let canUpdateVotes = async (id, dec) => {
     let voteStatus = await votesMap.findOne({ userId: id });
     let status = dec ? -1 : 1;
 
-    console.log({ voteStatus });
+    // console.log({ voteStatus });
 
 
     if (!voteStatus) {
@@ -348,7 +348,7 @@ let updateVotes = async (req, res) => {
     );
 
 
-    console.log("Votes updated");
+    // console.log("Votes updated");
 
     try {
 
@@ -385,7 +385,7 @@ let updateVotes = async (req, res) => {
 }
 
 let generateFeed = async (req, res) => {
-    console.log(req.params, req.query);
+    // console.log(req.params, req.query);
 
     let search = req.query.search;
     let sort = req.query.sort;
@@ -491,8 +491,15 @@ let getPostByTag = async (req, res) => {
 
 let savePostCluster = async (id) => {
 
-    let res = await axios.post(`http://127.0.0.1:5757/cluster?id=${id}`);
-
+    let res;
+    console.log(`Saving on id : ${id}`);
+    try {
+        res = await axios.post(`http://127.0.0.1:5757/cluster?id=${id}`);
+    }
+    catch (exception) {
+        console.error("Error connecting to python Server");
+        return;
+    }
     console.log(`save post cluster response data for id : ${id} `, res.data);
 
 }
@@ -505,7 +512,7 @@ let getReccomendedPost = async (req, res) => {
     let page = req.query.page || 0;
     let sort = req.query.sort;
 
-    console.log({ page, sort });
+    // console.log({ page, sort });
 
     let reccArr = recc.recc;
 

@@ -1,3 +1,4 @@
+import json
 import pickle
 import os
 from tokenize import String
@@ -80,7 +81,13 @@ def run():
 
     @app.route('/cluster', methods=['POST'])
     def get_cluster():
-        args = request.args.to_dict()
+
+        arge = None
+
+        try:
+            args = request.args.to_dict()
+        except:
+            return jsonify({'error': 'no arguments'})
 
         try:
             id = args['id']
